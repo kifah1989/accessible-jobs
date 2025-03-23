@@ -21,7 +21,7 @@ const Home = async () => {
               key={post.id}
               className='flex items-center justify-center gap-2 sm:justify-start'
             >
-              <span>{post.name}</span>
+              <span>{post.content}</span>
             </li>
           ))}
         </ol>

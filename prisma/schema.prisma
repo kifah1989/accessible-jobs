@@ -10,7 +10,93 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  followers Follower[] @relation("UserFollowers")
+  following Follower[] @relation("UserFollowing")
+  groups    Group[]
+  name      String
+  password  String
+  posts     Post[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Follower {
+  id         Int      @id @default(autoincrement())
+  follower   User     @relation("UserFollowing", fields: [followerId], references: [id])
+  followerId Int
+  user       User     @relation("UserFollowers", fields: [userId], references: [id])
+  userId     Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Group {
+  id        Int      @id @default(autoincrement())
+  name      String
+  owner     User     @relation(fields: [ownerId], references: [id])
+  ownerId   Int
+  posts     Post[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Post {
-  id   String @id @default(cuid())
-  name String
+  id        Int      @id @default(autoincrement())
+  content   String
+  group     Group?   @relation(fields: [groupId], references: [id])
+  groupId   Int?
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id           Int        @id @default(autoincrement())
+  content      String
+  internship   Internship @relation(fields: [internshipId], references: [id])
+  internshipId Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Category {
+  id        Int               @id @default(autoincrement())
+  items     MarketplaceItem[]
+  name      String
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model MarketplaceItem {
+  id          Int      @id @default(autoincrement())
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  description String
+  title       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Disability {
+  id           Int        @id @default(autoincrement())
+  internship   Internship @relation(fields: [internshipId], references: [id])
+  internshipId Int
+  name         String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Internship {
+  id           Int          @id @default(autoincrement())
+  description  String
+  disabilities Disability[]
+  location     String
+  reviews      Review[]
+  title        String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
